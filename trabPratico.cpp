@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+#define MAX_BLOCOS 100
+#define TAMANHO_BLOCO 100
+
 using namespace std;
 
 // registro dos dados
@@ -19,25 +22,18 @@ struct Registro
 // classe responsável pela manipulação dos dados
 class Manipula
 {
-
 public:
     void transfereRegistros(fstream &arqBin, ifstream &arqCSV);
-    void adicionar(fstream &arqBin);
-    void visualizaEntre(fstream &arqBin);
-    void alteraRegistro(fstream &arqBin);
-    void trocaRegistro(fstream &arqBin);
     void imprimeTodosRegistros(fstream &arqBin);
+    void ordenaExternaPorID(const char *arquivoOriginal);
+    void mergeArquivosOrdenados(const char *arquivosTemporarios[], int total, const char *arquivoFinal);
+    void adicionaNaPosicao(const char *nomeArquivo, const Registro &novoRegistro, int posicao);
 };
-
-// construtor não necessário
 
 void Manipula::transfereRegistros(fstream &arqBin, ifstream &arqCSV)
 {
-
     string linha;
-
-    // Ignora o cabeçalho do CSV
-    getline(arqCSV, linha);
+    getline(arqCSV, linha); // ignora cabeçalho
 
     while (getline(arqCSV, linha))
     {
@@ -45,37 +41,29 @@ void Manipula::transfereRegistros(fstream &arqBin, ifstream &arqCSV)
         string campo;
         Registro reg;
 
-        // Lê e converte os campos
-        // ID
         getline(ss, campo, ',');
         reg.id = stoi(campo);
 
-        // Name
         getline(ss, campo, ',');
         strncpy(reg.name, campo.c_str(), sizeof(reg.name));
         reg.name[sizeof(reg.name) - 1] = '\0';
 
-        // Team
         getline(ss, campo, ',');
         strncpy(reg.team, campo.c_str(), sizeof(reg.team));
         reg.team[sizeof(reg.team) - 1] = '\0';
 
-        // Games
         getline(ss, campo, ',');
         strncpy(reg.games, campo.c_str(), sizeof(reg.games));
         reg.games[sizeof(reg.games) - 1] = '\0';
 
-        // Year
         getline(ss, campo, ',');
         strncpy(reg.year, campo.c_str(), sizeof(reg.year));
         reg.year[sizeof(reg.year) - 1] = '\0';
 
-        // Season
         getline(ss, campo, ',');
         strncpy(reg.season, campo.c_str(), sizeof(reg.season));
         reg.season[sizeof(reg.season) - 1] = '\0';
 
-        // Escreve o registro no arquivo binário
         arqBin.write(reinterpret_cast<char *>(&reg), sizeof(Registro));
     }
 }
@@ -83,8 +71,8 @@ void Manipula::transfereRegistros(fstream &arqBin, ifstream &arqCSV)
 void Manipula::imprimeTodosRegistros(fstream &arqBin)
 {
     Registro reg;
-    arqBin.clear();            // limpa EOF flag
-    arqBin.seekg(0, ios::beg); // volta para o início
+    arqBin.clear();
+    arqBin.seekg(0, ios::beg);
 
     while (arqBin.read(reinterpret_cast<char *>(&reg), sizeof(Registro)))
     {
@@ -98,9 +86,179 @@ void Manipula::imprimeTodosRegistros(fstream &arqBin)
     }
 }
 
+void Manipula::ordenaExternaPorID(const char *arquivoOriginal)
+{
+    fstream arq(arquivoOriginal, ios::in | ios::binary);
+    if (!arq.is_open())
+    {
+        cerr << "Erro ao abrir o arquivo para ordenação externa.\n";
+        return;
+    }
+
+    Registro buffer[TAMANHO_BLOCO];
+    char nomesTemporarios[MAX_BLOCOS][20];
+    int totalTemporarios = 0;
+    bool terminou = false;
+
+    while (!terminou && totalTemporarios < MAX_BLOCOS)
+    {
+        int count = 0;
+
+        while (count < TAMANHO_BLOCO && arq.read(reinterpret_cast<char *>(&buffer[count]), sizeof(Registro)))
+        {
+            count++;
+        }
+
+        if (count == 0)
+        {
+            terminou = true;
+        }
+        else
+        {
+            // Bubble sort por ID
+            for (int i = 0; i < count - 1; ++i)
+            {
+                for (int j = 0; j < count - i - 1; ++j)
+                {
+                    if (buffer[j].id > buffer[j + 1].id)
+                    {
+                        Registro temp = buffer[j];
+                        buffer[j] = buffer[j + 1];
+                        buffer[j + 1] = temp;
+                    }
+                }
+            }
+
+            sprintf(nomesTemporarios[totalTemporarios], "temp%d.bin", totalTemporarios);
+            fstream temp(nomesTemporarios[totalTemporarios], ios::out | ios::binary);
+            if (!temp.is_open())
+            {
+                cerr << "Erro ao criar arquivo temporário.\n";
+                return;
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                temp.write(reinterpret_cast<char *>(&buffer[i]), sizeof(Registro));
+            }
+
+            temp.close();
+            totalTemporarios++;
+        }
+    }
+
+    arq.close();
+
+    const char *nomes[MAX_BLOCOS];
+    for (int i = 0; i < totalTemporarios; ++i)
+        nomes[i] = nomesTemporarios[i];
+
+    mergeArquivosOrdenados(nomes, totalTemporarios, "arquivo_ordenado.bin");
+
+    for (int i = 0; i < totalTemporarios; ++i)
+        remove(nomesTemporarios[i]);
+}
+
+void Manipula::mergeArquivosOrdenados(const char *arquivosTemporarios[], int total, const char *arquivoFinal)
+{
+    fstream arquivos[MAX_BLOCOS];
+    Registro buffer[MAX_BLOCOS];
+    bool ativo[MAX_BLOCOS];
+
+    for (int i = 0; i < total; ++i)
+    {
+        arquivos[i].open(arquivosTemporarios[i], ios::in | ios::binary);
+        if (!arquivos[i].is_open())
+        {
+            cerr << "Erro ao abrir arquivo temporário para mesclagem.\n";
+            return;
+        }
+
+        arquivos[i].read(reinterpret_cast<char *>(&buffer[i]), sizeof(Registro));
+        ativo[i] = arquivos[i].gcount() == sizeof(Registro);
+    }
+
+    fstream saida(arquivoFinal, ios::out | ios::binary);
+    if (!saida.is_open())
+    {
+        cerr << "Erro ao criar arquivo final ordenado.\n";
+        return;
+    }
+
+    bool finalizado = false;
+    while (!finalizado)
+    {
+        int menor = -1;
+
+        for (int i = 0; i < total; ++i)
+        {
+            if (ativo[i])
+            {
+                if (menor == -1 || buffer[i].id < buffer[menor].id)
+                    menor = i;
+            }
+        }
+
+        if (menor == -1)
+        {
+            finalizado = true;
+        }
+        else
+        {
+            saida.write(reinterpret_cast<char *>(&buffer[menor]), sizeof(Registro));
+            arquivos[menor].read(reinterpret_cast<char *>(&buffer[menor]), sizeof(Registro));
+            ativo[menor] = arquivos[menor].gcount() == sizeof(Registro);
+        }
+    }
+
+    saida.close();
+
+    for (int i = 0; i < total; ++i)
+        arquivos[i].close();
+}
+
+void Manipula::adicionaNaPosicao(const char *nomeArquivo, const Registro &novoRegistro, int posicao)
+{
+    fstream arq(nomeArquivo, ios::in | ios::out | ios::binary);
+    if (!arq.is_open())
+    {
+        cerr << "Erro ao abrir o arquivo!" << endl;
+        return;
+    }
+
+    // Descobrir tamanho total de registros
+    arq.seekg(0, ios::end);
+    int totalRegistros = arq.tellg() / sizeof(Registro);
+
+    if (posicao > totalRegistros)
+    {
+        cerr << "Posição inválida: maior que o total de registros." << endl;
+        arq.close();
+        return;
+    }
+
+    // Ler todos os registros a partir da posição para um buffer
+    int n = totalRegistros - posicao;
+    Registro *buffer = new Registro[n];
+
+    arq.seekg(posicao * sizeof(Registro), ios::beg);
+    for (int i = 0; i < n; ++i)
+        arq.read(reinterpret_cast<char *>(&buffer[i]), sizeof(Registro));
+
+    // Voltar para a posição e escrever o novo registro
+    arq.seekp(posicao * sizeof(Registro), ios::beg);
+    arq.write(reinterpret_cast<const char *>(&novoRegistro), sizeof(Registro));
+
+    // Reescrever os registros seguintes
+    for (int i = 0; i < n; ++i)
+        arq.write(reinterpret_cast<const char *>(&buffer[i]), sizeof(Registro));
+
+    delete[] buffer;
+    arq.close();
+}
+
 int main()
 {
-    // abre o arquivo CSV
     ifstream dadosCSV("data_athlete_event.csv", ios::in);
     if (!dadosCSV.is_open())
     {
@@ -108,7 +266,6 @@ int main()
         return 1;
     }
 
-    // Cria (ou sobrescreve) o arquivo binário
     fstream dadosBIN("arquivo.bin", ios::out | ios::binary);
     if (!dadosBIN.is_open())
     {
@@ -116,23 +273,31 @@ int main()
         return 1;
     }
 
-    Manipula m;
-    m.transfereRegistros(dadosBIN, dadosCSV);
+    cout << "----PROJETO PRATICO ESTRUTURA DE DADOS----" << endl;
+    cout << "----Alunos: Joao Victor, Gabriel Santos e Luis Gustavo----" << endl;
+    cout << "##Lista de comandos:##" << endl;
+    cout << "C - para copiar os registros do arquivo CSV para o arquivo binário." << endl;
+    cout << "L - para listar todos os registros" << endl;
+    cout << "O - para ordenar os registros de forma externa no arquivo binário" << endl;
+    cout << "Lo - para Listar os registros ordenados." << endl;
+    cout << "A +... - para adicionar um registro em determinada posicao" << endl;
+    cout << "F - finalizar o programa" << endl;
 
-    dadosBIN.close();
-    dadosCSV.close();
-
-    // Agora reabre para leitura
-    fstream leituraBIN("arquivo.bin", ios::in | ios::binary);
-    if (!leituraBIN.is_open())
+    string comando;
+    cin >> comando;
+    // vou terminar (JV)
+    do
     {
-        cerr << "Erro: Não foi possível abrir o arquivo binário para leitura!" << endl;
-        return 1;
-    }
+        switch (comando)
+        {
+        case comando == "C":
+            /* code */
+            break;
 
-    cout << "Registros copiados com sucesso:\n";
-    m.imprimeTodosRegistros(leituraBIN);
-    leituraBIN.close();
+        default:
+            break;
+        }
+    } while (comando != "F");
 
     return 0;
 }
