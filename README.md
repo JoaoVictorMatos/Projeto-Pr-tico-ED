@@ -15,10 +15,15 @@ Este projeto implementa um sistema em C++ que realiza a conversão de registros 
 Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes campos:
 
 int **id**: identificador do atleta;
+
 chat **name**: nome do atleta;
+
 char **city**: cidade;
+
 char **sport**: modalidade esportiva;
+
 char **event**: evento esportivo;
+
 char **noc**: código do Comitê Olímpico Nacional.
 
 ### Funcionalidades
