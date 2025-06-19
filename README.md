@@ -1,6 +1,7 @@
 # README
 
 ## Desenvolvedores
+
 - **João Victor**
 - **Gabriel Santos**
 - **Luís Gustavo Morais Cardoso** 
@@ -11,6 +12,7 @@
 Este projeto implementa um sistema em C++ que realiza a conversão de registros a partir de um arquivo CSV para um arquivo binário. O sistema oferece funcionalidades para visualização, inserção, alteração, troca e ordenação de registros diretamente no arquivo, sem carregar todo o conteúdo em memória. A ordenação externa é feita utilizando o método de intercalação de dois caminhos.
 
 ### Estruturas
+
 **Struct Registro**
 Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes campos:
 
@@ -27,6 +29,7 @@ char **event**: evento esportivo;
 char **noc**: código do Comitê Olímpico Nacional.
 
 ### Funcionalidades
+
 1. **converterCSVParaBinario()**: Lê os dados de um arquivo CSV e escreve os registros no formato binário.
 
 2. **imprimirTodos()**: Exibe todos os registros salvos no arquivo binário.
@@ -42,6 +45,7 @@ char **noc**: código do Comitê Olímpico Nacional.
 7. **ordenarArquivo()**: Realiza a ordenação externa do arquivo binário usando intercalação de dois caminhos, com blocos de tamanho crescente.
 
 ## Instruções de Uso
+
 1. **Compilação**
 g++ -Wall -Wextra -std=c++11 main.cpp -o programa
 (Substitua main.cpp pelo nome do seu arquivo fonte.)
@@ -64,6 +68,7 @@ Ao executar, o usuário terá acesso ao seguinte menu de opções:
 
 
 ## Requisitos 
+
 **Linguagem**: C++
 **Bibliotecas**: <iostream>, <fstream>, <cstring>, <cstdlib>
 **Sistema de arquivos**: leitura e escrita em arquivos binários com uso de fstream
