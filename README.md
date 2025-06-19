@@ -1,82 +1,64 @@
 # README
 
 ## Desenvolvedores
-João Victor – Matrícula: 
-Gabriel Santos – Matrícula: 
-Luís Gustavo Morais Cardoso – Matrícula: 202220819
+- **João Victor**
+- **Gabriel Santos**
+- **Luís Gustavo Morais Cardoso** 
 
-##Projeto: Conversão CSV para Binário e Ordenação Externa (Merge Multiway)
+##Projeto: Manipulação de Arquivo Binário e Ordenação Externa
 
 ## Sobre o Projeto
-Este projeto implementa, em C++, um sistema de manipulação de registros esportivos extraídos de um arquivo CSV, com armazenamento direto em arquivo binário. Oferece operações de inserção, visualização, alteração e troca de registros em posições arbitrárias, sem jamais carregar todo o arquivo na memória. Para ordenação dos dados, utiliza o algoritmo de Merge Multiway (ordenador externo), capaz de processar grandes volumes de registros.
+Este projeto implementa um sistema em C++ que realiza a conversão de registros a partir de um arquivo CSV para um arquivo binário. O sistema oferece funcionalidades para visualização, inserção, alteração, troca e ordenação de registros diretamente no arquivo, sem carregar todo o conteúdo em memória. A ordenação externa é feita utilizando o método de intercalação de dois caminhos.
 
 ### Estruturas
-- Struct Registro
-Guarda os campos de cada atleta:
+**Struct Registro**
+Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes campos:
 
-int    id;
-char   name[100];
-char   team[50];
-char   games[100];
-char   year[50];
-char   season[50];
-
-- Classe Manipula
-Encapsula todas as operações sobre o arquivo binário:
-
-transfereRegistros(...) – converte CSV em registros binários.
-
-imprimeTodosRegistros(...) – lista o conteúdo atual.
-
-ordenaExternaPorID(...) – cria runs, ordena e chama o merge multiway.
-
-mergeArquivosOrdenados(...) – intercala várias partições ordenadas.
-
-adicionaNaPosicao(...) – insere um registro em posição específica.
-
-imprimeRegistrosOrdenados(...) – lista o arquivo já ordenado.
+int **id**: identificador do atleta;
+chat **name**: nome do atleta;
+char **city**: cidade;
+char **sport**: modalidade esportiva;
+char **event**: evento esportivo;
+char **noc**: código do Comitê Olímpico Nacional.
 
 ### Funcionalidades
-C – Converte e carrega todos os registros do CSV (data_athlete_event.csv) para arquivo.bin.
+1. **converterCSVParaBinario()**: Lê os dados de um arquivo CSV e escreve os registros no formato binário.
 
-L – Lista todos os registros armazenados em arquivo.bin.
+2. **imprimirTodos()**: Exibe todos os registros salvos no arquivo binário.
 
-O – Ordena externamente arquivo.bin por id (crescente), produzindo arquivo_ordenado.bin.
+3. **visualizarIntervalo()**: Mostra os registros entre duas posições específicas.
 
-LO – Lista os registros de arquivo_ordenado.bin.
+4. **inserirNaPosicao()**: Insere um novo registro em qualquer posição do arquivo binário, utilizando um arquivo temporário para realocar os dados.
 
-A <posição> – Adiciona um novo registro em qualquer posição (0‑based), deslocando o restante.
+5. **alterarRegistro()**: Altera um registro existente com base em sua posição no arquivo.
 
-F – Finaliza o programa.
+6. **trocarRegistros()**: Troca o conteúdo de duas posições do arquivo binário.
+
+7. **ordenarArquivo()**: Realiza a ordenação externa do arquivo binário usando intercalação de dois caminhos, com blocos de tamanho crescente.
 
 ## Instruções de Uso
-1- Compilação
+1. **Compilação**
 g++ -Wall -Wextra -std=c++11 main.cpp -o programa
 (Substitua main.cpp pelo nome do seu arquivo fonte.)
 
-2- Execução
+2. **Execução**
 ./programa
 Será exibido o menu de comandos.
 
-3- Carregar dados
-Digite C para ler data_athlete_event.csv e gerar arquivo.bin.
+3. **Menu Principal**
+Ao executar, o usuário terá acesso ao seguinte menu de opções:
 
-4- Listar registros
-L – mostra tudo em arquivo.bin.
-LO – mostra tudo em arquivo_ordenado.bin (após ordenar).
+1: Converter CSV para Binário
+2: Inserir Registro em Posição Específica
+3: Visualizar Intervalo de Registros
+4: Alterar Registro por Posição
+5: Trocar Registros
+6: Imprimir Todos os Registros
+7: Ordenar Arquivo (Intercalação Externa)
+0: Sair do Programa
 
-5- Ordenar
-Digite O para executar o Merge Multiway:
-Gera runs ordenados em arquivos temporários.
-Intercala todos, formando arquivo_ordenado.bin.
-
-6- Inserir em posição
-Digite A e informe a posição de inserção (0‑based), em seguida preencha os campos.
-
-7- Finalizar
-Digite F para sair.
 
 ## Requisitos 
-Linguagem: C++11 ou superior
-Bibliotecas: <iostream>, <fstream>, <sstream>, <string>, <cstring>
-Compilador: g++ (MinGW no Windows ou equivalente em Linux)
+**Linguagem**: C++
+**Bibliotecas**: <iostream>, <fstream>, <cstring>, <cstdlib>
+**Sistema de arquivos**: leitura e escrita em arquivos binários com uso de fstream
