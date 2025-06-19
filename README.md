@@ -6,69 +6,75 @@
 - **Gabriel Santos**
 - **Luís Gustavo Morais Cardoso** 
 
-##Projeto: Manipulação de Arquivo Binário e Ordenação Externa
+---
 
 ## Sobre o Projeto
-Este projeto implementa um sistema em C++ que realiza a conversão de registros a partir de um arquivo CSV para um arquivo binário. O sistema oferece funcionalidades para visualização, inserção, alteração, troca e ordenação de registros diretamente no arquivo, sem carregar todo o conteúdo em memória. A ordenação externa é feita utilizando o método de intercalação de dois caminhos.
 
-### Estruturas
+Este projeto implementa um sistema em C++ que realiza a conversão de registros a partir de um arquivo CSV para um arquivo binário. O sistema oferece funcionalidades para visualização, inserção, alteração, troca e ordenação de registros diretamente no arquivo, sem carregar todo o conteúdo em memória. A ordenação externa é feita utilizando o método de **intercalação de dois caminhos**.
 
-**Struct Registro**
+---
+
+## Estruturas
+
+### `struct Registro`
+
 Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes campos:
 
-int **id**: identificador do atleta;
+struct Registro {
+    int    id;               // Identificador do atleta
+    char   name[100];        // Nome do atleta
+    char   city[50];         // Cidade
+    char   sport[50];        // Modalidade esportiva
+    char   event[100];       // Evento esportivo
+    char   noc[10];          // Código do Comitê Olímpico Nacional
+};
 
-chat **name**: nome do atleta;
+## Funcionalidades
+converterCSVParaBinario()
+Lê os dados de um arquivo CSV e escreve os registros no formato binário.
 
-char **city**: cidade;
+imprimirTodos()
+Exibe todos os registros salvos no arquivo binário.
 
-char **sport**: modalidade esportiva;
+visualizarIntervalo()
+Mostra os registros entre duas posições específicas.
 
-char **event**: evento esportivo;
+inserirNaPosicao()
+Insere um novo registro em qualquer posição do arquivo binário, utilizando um arquivo temporário para realocar os dados.
 
-char **noc**: código do Comitê Olímpico Nacional.
+alterarRegistro()
+Altera um registro existente com base em sua posição no arquivo.
 
-### Funcionalidades
+trocarRegistros()
+Troca o conteúdo de duas posições do arquivo binário.
 
-1. **converterCSVParaBinario()**: Lê os dados de um arquivo CSV e escreve os registros no formato binário.
-
-2. **imprimirTodos()**: Exibe todos os registros salvos no arquivo binário.
-
-3. **visualizarIntervalo()**: Mostra os registros entre duas posições específicas.
-
-4. **inserirNaPosicao()**: Insere um novo registro em qualquer posição do arquivo binário, utilizando um arquivo temporário para realocar os dados.
-
-5. **alterarRegistro()**: Altera um registro existente com base em sua posição no arquivo.
-
-6. **trocarRegistros()**: Troca o conteúdo de duas posições do arquivo binário.
-
-7. **ordenarArquivo()**: Realiza a ordenação externa do arquivo binário usando intercalação de dois caminhos, com blocos de tamanho crescente.
+ordenarArquivo()
+Realiza a ordenação externa do arquivo binário usando intercalação de dois caminhos, com blocos de tamanho crescente.
 
 ## Instruções de Uso
+1. Compilação
 
-1. **Compilação**
 g++ -Wall -Wextra -std=c++11 main.cpp -o programa
-(Substitua main.cpp pelo nome do seu arquivo fonte.)
 
-2. **Execução**
+2. Execução
+
 ./programa
-Será exibido o menu de comandos.
+O menu de comandos será exibido no terminal.
 
-3. **Menu Principal**
-Ao executar, o usuário terá acesso ao seguinte menu de opções:
+3. Menu Principal
 
-1: Converter CSV para Binário
-2: Inserir Registro em Posição Específica
-3: Visualizar Intervalo de Registros
-4: Alterar Registro por Posição
-5: Trocar Registros
-6: Imprimir Todos os Registros
-7: Ordenar Arquivo (Intercalação Externa)
-0: Sair do Programa
+1 - Converter CSV para Binário
+2 - Inserir Registro em Posição Específica
+3 - Visualizar Intervalo de Registros
+4 - Alterar Registro por Posição
+5 - Trocar Registros
+6 - Imprimir Todos os Registros
+7 - Ordenar Arquivo (Intercalação Externa)
+0 - Sair do Programa
 
+## Requisitos
+Linguagem: C++
 
-## Requisitos 
+Bibliotecas: <iostream>, <fstream>, <cstring>, <cstdlib>
 
-**Linguagem**: C++
-**Bibliotecas**: <iostream>, <fstream>, <cstring>, <cstdlib>
-**Sistema de arquivos**: leitura e escrita em arquivos binários com uso de fstream
+Sistema de Arquivos: Leitura e escrita em arquivos binários utilizando fstream
