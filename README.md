@@ -20,14 +20,12 @@ Este projeto implementa um sistema em C++ que realiza a conversão de registros 
 
 Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes campos:
 
-struct Registro {
-    int    id;               // Identificador do atleta
-    char   name[100];        // Nome do atleta
-    char   city[50];         // Cidade
-    char   sport[50];        // Modalidade esportiva
-    char   event[100];       // Evento esportivo
-    char   noc[10];          // Código do Comitê Olímpico Nacional
-};
+- int    id : Identificador do atleta;
+- char   name[100] : Nome do atleta;
+- char   city[50] : Cidade;
+- char   sport[50] : Modalidade esportiva;
+- char   event[100] : Evento esportivo;
+- char   noc[10] : Código do Comitê Olímpico Nacional;
 
 ## Funcionalidades
 converterCSVParaBinario()
@@ -58,8 +56,7 @@ g++ -Wall -Wextra -std=c++11 main.cpp -o programa
 
 2. Execução
 
-./programa
-O menu de comandos será exibido no terminal.
+./programa (O menu de comandos será exibido no terminal)
 
 3. Menu Principal
 
@@ -73,8 +70,8 @@ O menu de comandos será exibido no terminal.
 0 - Sair do Programa
 
 ## Requisitos
-Linguagem: C++
+- Linguagem: C++
 
-Bibliotecas: <iostream>, <fstream>, <cstring>, <cstdlib>
+- Bibliotecas: iostream, fstream, cstring, cstdlib
 
-Sistema de Arquivos: Leitura e escrita em arquivos binários utilizando fstream
+- Sistema de Arquivos: Leitura e escrita em arquivos binários utilizando fstream
