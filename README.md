@@ -28,25 +28,25 @@ Estrutura utilizada para armazenar os dados dos atletas. Contém os seguintes ca
 - char   noc[10] : Código do Comitê Olímpico Nacional;
 
 ## Funcionalidades
-converterCSVParaBinario()
+- converterCSVParaBinario():
 Lê os dados de um arquivo CSV e escreve os registros no formato binário.
 
-imprimirTodos()
+- imprimirTodos():
 Exibe todos os registros salvos no arquivo binário.
 
-visualizarIntervalo()
+- visualizarIntervalo():
 Mostra os registros entre duas posições específicas.
 
-inserirNaPosicao()
+- inserirNaPosicao():
 Insere um novo registro em qualquer posição do arquivo binário, utilizando um arquivo temporário para realocar os dados.
 
-alterarRegistro()
+- alterarRegistro():
 Altera um registro existente com base em sua posição no arquivo.
 
-trocarRegistros()
+- trocarRegistros():
 Troca o conteúdo de duas posições do arquivo binário.
 
-ordenarArquivo()
+- ordenarArquivo():
 Realiza a ordenação externa do arquivo binário usando intercalação de dois caminhos, com blocos de tamanho crescente.
 
 ## Instruções de Uso
