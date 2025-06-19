@@ -60,14 +60,14 @@ g++ -Wall -Wextra -std=c++11 main.cpp -o programa
 
 3. Menu Principal
 
-1 - Converter CSV para Binário
-2 - Inserir Registro em Posição Específica
-3 - Visualizar Intervalo de Registros
-4 - Alterar Registro por Posição
-5 - Trocar Registros
-6 - Imprimir Todos os Registros
-7 - Ordenar Arquivo (Intercalação Externa)
-0 - Sair do Programa
+1. Converter CSV para Binário;
+2. Inserir Registro em Posição Específica;
+3. Visualizar Intervalo de Registros;
+4. Alterar Registro por Posição;
+5. Trocar Registros;
+6. Imprimir Todos os Registros;
+7. Ordenar Arquivo;
+0. Sair do Programa;
 
 ## Requisitos
 - Linguagem: C++
