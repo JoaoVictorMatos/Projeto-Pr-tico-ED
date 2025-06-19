@@ -11,7 +11,8 @@ using namespace std;
 #define MAX_EVENT 100
 #define MAX_NOC 10
 
-struct Registro {
+struct Registro
+{
     int id;
     char name[MAX_NAME];
     char city[MAX_CITY];
@@ -20,219 +21,244 @@ struct Registro {
     char noc[MAX_NOC];
 };
 
-// Conversão CSV para Binário
-void converterCSVParaBinario(const char* csvFile, const char* binFile) {
-    ifstream csv(csvFile);
-    ofstream bin(binFile, ios::binary);
-    if (!csv || !bin) {
-        cout << "Erro ao abrir arquivos.\n";
+void converterCSVParaBinario(const char *nomeCsv, const char *nomeBinario)
+{
+    ifstream arquivoCsv(nomeCsv);
+    ofstream arquivoBinario(nomeBinario, ios::binary);
+
+    if (!arquivoCsv || !arquivoBinario)
+    {
+        cout << "Erro ao abrir os arquivos.\n";
         return;
     }
 
     string linha;
-    getline(csv, linha); // Ignorar cabeçalho
+    getline(arquivoCsv, linha); // Ignora cabeçalho
 
-    while (getline(csv, linha)) {
-        Registro r;
-        char linhaC[1024];
-        strncpy(linhaC, linha.c_str(), sizeof(linhaC));
-        linhaC[sizeof(linhaC)-1] = '\0';
+    while (getline(arquivoCsv, linha))
+    {
+        Registro registro;
+        char linhaConvertida[1024];
+        strncpy(linhaConvertida, linha.c_str(), sizeof(linhaConvertida));
+        linhaConvertida[sizeof(linhaConvertida) - 1] = '\0';
 
-        char* token = strtok(linhaC, ",");
-        r.id = atoi(token);
-
-        token = strtok(NULL, ",");
-        strncpy(r.name, token, MAX_NAME);
+        char *token = strtok(linhaConvertida, ",");
+        registro.id = atoi(token);
 
         token = strtok(NULL, ",");
-        strncpy(r.city, token, MAX_CITY);
+        strncpy(registro.name, token, MAX_NAME);
 
         token = strtok(NULL, ",");
-        strncpy(r.sport, token, MAX_SPORT);
+        strncpy(registro.city, token, MAX_CITY);
 
         token = strtok(NULL, ",");
-        strncpy(r.event, token, MAX_EVENT);
+        strncpy(registro.sport, token, MAX_SPORT);
 
         token = strtok(NULL, ",");
-        strncpy(r.noc, token, MAX_NOC);
+        strncpy(registro.event, token, MAX_EVENT);
 
-        bin.write((char*)&r, sizeof(Registro));
+        token = strtok(NULL, ",");
+        strncpy(registro.noc, token, MAX_NOC);
+
+        arquivoBinario.write((char *)&registro, sizeof(Registro));
     }
 
-    csv.close();
-    bin.close();
+    arquivoCsv.close();
+    arquivoBinario.close();
     cout << "Conversao concluida.\n";
 }
 
-// Impressão de um Registro
-void imprimirRegistro(const Registro& r) {
-    cout << r.id << ", " << r.name << ", " << r.city << ", " << r.sport << ", " << r.event << ", " << r.noc << endl;
+void imprimirRegistro(const Registro &registro)
+{
+    cout << registro.id << ", " << registro.name << ", " << registro.city << ", "
+         << registro.sport << ", " << registro.event << ", " << registro.noc << endl;
 }
 
-// Impressão de todos os registros
-void imprimirTodos(const char* binFile) {
-    ifstream bin(binFile, ios::binary);
-    if (!bin) {
-        cout << "Erro ao abrir arquivo binario.\n";
+void imprimirTodosRegistros(const char *nomeBinario)
+{
+    ifstream arquivo(nomeBinario, ios::binary);
+    if (!arquivo)
+    {
+        cout << "Erro ao abrir o arquivo binario.\n";
         return;
     }
-    Registro r;
-    while (bin.read((char*)&r, sizeof(Registro))) {
-        imprimirRegistro(r);
+    Registro registro;
+    while (arquivo.read((char *)&registro, sizeof(Registro)))
+    {
+        imprimirRegistro(registro);
     }
-    bin.close();
+    arquivo.close();
 }
 
-// Visualizar intervalo
-void visualizarIntervalo(const char* binFile, int inicio, int fim) {
-    ifstream bin(binFile, ios::binary);
-    if (!bin) {
-        cout << "Erro ao abrir arquivo.\n";
+void visualizarIntervalo(const char *nomeBinario, int inicio, int fim)
+{
+    ifstream arquivo(nomeBinario, ios::binary);
+    if (!arquivo)
+    {
+        cout << "Erro ao abrir o arquivo.\n";
         return;
     }
-    Registro r;
-    int pos = 0;
-    while (bin.read((char*)&r, sizeof(Registro))) {
-        if (pos >= inicio && pos <= fim) {
-            imprimirRegistro(r);
+    Registro registro;
+    int posicao = 0;
+    while (arquivo.read((char *)&registro, sizeof(Registro)))
+    {
+        if (posicao >= inicio && posicao <= fim)
+        {
+            imprimirRegistro(registro);
         }
-        pos++;
+        posicao++;
     }
-    bin.close();
+    arquivo.close();
 }
 
-// Alterar registro
-void alterarRegistro(const char* binFile, int pos, Registro novo) {
-    fstream bin(binFile, ios::in | ios::out | ios::binary);
-    if (!bin) {
-        cout << "Erro ao abrir arquivo.\n";
+void alterarRegistro(const char *nomeBinario, int posicao, Registro novoRegistro)
+{
+    fstream arquivo(nomeBinario, ios::in | ios::out | ios::binary);
+    if (!arquivo)
+    {
+        cout << "Erro ao abrir o arquivo.\n";
         return;
     }
-    bin.seekp(pos * sizeof(Registro));
-    bin.write((char*)&novo, sizeof(Registro));
-    bin.close();
+    arquivo.seekp(posicao * sizeof(Registro));
+    arquivo.write((char *)&novoRegistro, sizeof(Registro));
+    arquivo.close();
 }
 
-// Trocar registros
-void trocarRegistros(const char* binFile, int pos1, int pos2) {
-    fstream bin(binFile, ios::in | ios::out | ios::binary);
-    if (!bin) {
-        cout << "Erro ao abrir arquivo.\n";
+void trocarRegistros(const char *nomeBinario, int posicao1, int posicao2)
+{
+    fstream arquivo(nomeBinario, ios::in | ios::out | ios::binary);
+    if (!arquivo)
+    {
+        cout << "Erro ao abrir o arquivo.\n";
         return;
     }
-    Registro r1, r2;
+    Registro registro1, registro2;
 
-    bin.seekg(pos1 * sizeof(Registro));
-    bin.read((char*)&r1, sizeof(Registro));
+    arquivo.seekg(posicao1 * sizeof(Registro));
+    arquivo.read((char *)&registro1, sizeof(Registro));
 
-    bin.seekg(pos2 * sizeof(Registro));
-    bin.read((char*)&r2, sizeof(Registro));
+    arquivo.seekg(posicao2 * sizeof(Registro));
+    arquivo.read((char *)&registro2, sizeof(Registro));
 
-    bin.seekp(pos1 * sizeof(Registro));
-    bin.write((char*)&r2, sizeof(Registro));
+    arquivo.seekp(posicao1 * sizeof(Registro));
+    arquivo.write((char *)&registro2, sizeof(Registro));
 
-    bin.seekp(pos2 * sizeof(Registro));
-    bin.write((char*)&r1, sizeof(Registro));
+    arquivo.seekp(posicao2 * sizeof(Registro));
+    arquivo.write((char *)&registro1, sizeof(Registro));
 
-    bin.close();
+    arquivo.close();
 }
 
-// Inserção sem carregar tudo: via arquivo temporário
-void inserirNaPosicao(const char* binFile, int pos, Registro novo) {
-    ifstream in(binFile, ios::binary);
-    ofstream out("temp.bin", ios::binary);
-    if (!in || !out) {
+void inserirNaPosicao(const char *nomeBinario, int posicao, Registro novoRegistro)
+{
+    ifstream arquivoEntrada(nomeBinario, ios::binary);
+    ofstream arquivoTemp("temp.bin", ios::binary);
+    if (!arquivoEntrada || !arquivoTemp)
+    {
         cout << "Erro ao abrir arquivos.\n";
         return;
     }
-    Registro r;
-    int i = 0;
-    while (in.read((char*)&r, sizeof(Registro))) {
-        if (i == pos) {
-            out.write((char*)&novo, sizeof(Registro));
+    Registro registroAtual;
+    int contador = 0;
+    while (arquivoEntrada.read((char *)&registroAtual, sizeof(Registro)))
+    {
+        if (contador == posicao)
+        {
+            arquivoTemp.write((char *)&novoRegistro, sizeof(Registro));
         }
-        out.write((char*)&r, sizeof(Registro));
-        i++;
+        arquivoTemp.write((char *)&registroAtual, sizeof(Registro));
+        contador++;
     }
-    if (pos >= i) {
-        out.write((char*)&novo, sizeof(Registro));
+    if (posicao >= contador)
+    {
+        arquivoTemp.write((char *)&novoRegistro, sizeof(Registro));
     }
-    in.close();
-    out.close();
-    remove(binFile);
-    rename("temp.bin", binFile);
+    arquivoEntrada.close();
+    arquivoTemp.close();
+    remove(nomeBinario);
+    rename("temp.bin", nomeBinario);
 }
 
-// Ordenação externa simples: Intercalação de dois caminhos
-void ordenarArquivo(const char* binFile) {
-    const char* temp1 = "temp1.bin";
-    const char* temp2 = "temp2.bin";
+void ordenarArquivo(const char *nomeBinario)
+{
+    const char *arquivoTemp1 = "temp1.bin";
+    const char *arquivoTemp2 = "temp2.bin";
 
-    bool ordenado = false;
-    int bloco = 1;
+    bool arquivoOrdenado = false;
+    int tamanhoBloco = 1;
 
-    while (!ordenado) {
-        ifstream in(binFile, ios::binary);
-        ofstream out1(temp1, ios::binary);
-        ofstream out2(temp2, ios::binary);
+    while (!arquivoOrdenado)
+    {
+        ifstream entrada(nomeBinario, ios::binary);
+        ofstream saida1(arquivoTemp1, ios::binary);
+        ofstream saida2(arquivoTemp2, ios::binary);
 
-        Registro r;
-        int count = 0;
+        Registro registro;
+        int totalRegistros = 0;
 
-        while (in.read((char*)&r, sizeof(Registro))) {
-            if (count / bloco % 2 == 0)
-                out1.write((char*)&r, sizeof(Registro));
+        while (entrada.read((char *)&registro, sizeof(Registro)))
+        {
+            if (totalRegistros / tamanhoBloco % 2 == 0)
+                saida1.write((char *)&registro, sizeof(Registro));
             else
-                out2.write((char*)&r, sizeof(Registro));
-            count++;
+                saida2.write((char *)&registro, sizeof(Registro));
+            totalRegistros++;
         }
-        in.close();
-        out1.close();
-        out2.close();
+        entrada.close();
+        saida1.close();
+        saida2.close();
 
-        ifstream f1(temp1, ios::binary);
-        ifstream f2(temp2, ios::binary);
-        ofstream out(binFile, ios::binary);
+        ifstream leitura1(arquivoTemp1, ios::binary);
+        ifstream leitura2(arquivoTemp2, ios::binary);
+        ofstream saidaFinal(nomeBinario, ios::binary);
 
-        Registro r1, r2;
-        bool has1 = (bool)f1.read((char*)&r1, sizeof(Registro));
-		bool has2 = (bool)f2.read((char*)&r2, sizeof(Registro));
+        Registro registro1, registro2;
+        bool temRegistro1 = leitura1.read((char *)&registro1, sizeof(Registro)).gcount() == sizeof(Registro);
+        bool temRegistro2 = leitura2.read((char *)&registro2, sizeof(Registro)).gcount() == sizeof(Registro);
 
-        while (has1 || has2) {
+        while (temRegistro1 || temRegistro2)
+        {
             int i = 0, j = 0;
-            Registro* buffer1 = new Registro[bloco];
-            Registro* buffer2 = new Registro[bloco];
+            Registro *buffer1 = new Registro[tamanhoBloco];
+            Registro *buffer2 = new Registro[tamanhoBloco];
 
-            while (i < bloco && has1) {
-                buffer1[i] = r1;
+            while (i < tamanhoBloco && temRegistro1)
+            {
+                buffer1[i] = registro1;
                 i++;
-			has1 = f1.read((char*)&r1, sizeof(Registro)).gcount() == sizeof(Registro);
-
+                temRegistro1 = leitura1.read((char *)&registro1, sizeof(Registro)).gcount() == sizeof(Registro);
             }
 
-            while (j < bloco && has2) {
-                buffer2[j] = r2;
+            while (j < tamanhoBloco && temRegistro2)
+            {
+                buffer2[j] = registro2;
                 j++;
-			has2 = f2.read((char*)&r2, sizeof(Registro)).gcount() == sizeof(Registro);
+                temRegistro2 = leitura2.read((char *)&registro2, sizeof(Registro)).gcount() == sizeof(Registro);
             }
 
             int x = 0, y = 0;
-            while (x < i && y < j) {
-                if (buffer1[x].id <= buffer2[y].id) {
-                    out.write((char*)&buffer1[x], sizeof(Registro));
+            while (x < i && y < j)
+            {
+                if (buffer1[x].id <= buffer2[y].id)
+                {
+                    saidaFinal.write((char *)&buffer1[x], sizeof(Registro));
                     x++;
-                } else {
-                    out.write((char*)&buffer2[y], sizeof(Registro));
+                }
+                else
+                {
+                    saidaFinal.write((char *)&buffer2[y], sizeof(Registro));
                     y++;
                 }
             }
 
-            while (x < i) {
-                out.write((char*)&buffer1[x], sizeof(Registro));
+            while (x < i)
+            {
+                saidaFinal.write((char *)&buffer1[x], sizeof(Registro));
                 x++;
             }
-            while (y < j) {
-                out.write((char*)&buffer2[y], sizeof(Registro));
+            while (y < j)
+            {
+                saidaFinal.write((char *)&buffer2[y], sizeof(Registro));
                 y++;
             }
 
@@ -240,27 +266,30 @@ void ordenarArquivo(const char* binFile) {
             delete[] buffer2;
         }
 
-        f1.close();
-        f2.close();
-        out.close();
+        leitura1.close();
+        leitura2.close();
+        saidaFinal.close();
 
-        bloco *= 2;
-        if (bloco >= count) {
-            ordenado = true;
+        tamanhoBloco *= 2;
+        if (tamanhoBloco >= totalRegistros)
+        {
+            arquivoOrdenado = true;
         }
     }
 
-    remove(temp1);
-    remove(temp2);
+    remove(arquivoTemp1);
+    remove(arquivoTemp2);
     cout << "Ordenacao concluida.\n";
 }
 
-int main() {
+int main()
+{
     int opcao;
-    char csvFile[] = "data_athlete_event.csv";
-    char binFile[] = "arquivo.bin";
+    char nomeCsv[] = "data_athlete_event.csv";
+    char nomeBinario[] = "arquivo.bin";
 
-    do {
+    do
+    {
         cout << "\nMenu:\n";
         cout << "1 - Converter CSV para Binario\n";
         cout << "2 - Inserir Registro\n";
@@ -273,44 +302,77 @@ int main() {
         cout << "Escolha: ";
         cin >> opcao;
 
-        if (opcao == 1) {
-            converterCSVParaBinario(csvFile, binFile);
-        } else if (opcao == 2) {
-            Registro novo;
-            cout << "ID: "; cin >> novo.id; cin.ignore();
-            cout << "Name: "; cin.getline(novo.name, MAX_NAME);
-            cout << "City: "; cin.getline(novo.city, MAX_CITY);
-            cout << "Sport: "; cin.getline(novo.sport, MAX_SPORT);
-            cout << "Event: "; cin.getline(novo.event, MAX_EVENT);
-            cout << "NOC: "; cin.getline(novo.noc, MAX_NOC);
-            int pos;
-            cout << "Posicao: "; cin >> pos;
-            inserirNaPosicao(binFile, pos, novo);
-        } else if (opcao == 3) {
-            int ini, fim;
-            cout << "De: "; cin >> ini;
-            cout << "Ate: "; cin >> fim;
-            visualizarIntervalo(binFile, ini, fim);
-        } else if (opcao == 4) {
-            Registro novo;
-            int pos;
-            cout << "Posicao: "; cin >> pos;
-            cout << "ID: "; cin >> novo.id; cin.ignore();
-            cout << "Name: "; cin.getline(novo.name, MAX_NAME);
-            cout << "City: "; cin.getline(novo.city, MAX_CITY);
-            cout << "Sport: "; cin.getline(novo.sport, MAX_SPORT);
-            cout << "Event: "; cin.getline(novo.event, MAX_EVENT);
-            cout << "NOC: "; cin.getline(novo.noc, MAX_NOC);
-            alterarRegistro(binFile, pos, novo);
-        } else if (opcao == 5) {
-            int pos1, pos2;
-            cout << "Posicao 1: "; cin >> pos1;
-            cout << "Posicao 2: "; cin >> pos2;
-            trocarRegistros(binFile, pos1, pos2);
-        } else if (opcao == 6) {
-            imprimirTodos(binFile);
-        } else if (opcao == 7) {
-            ordenarArquivo(binFile);
+        if (opcao == 1)
+        {
+            converterCSVParaBinario(nomeCsv, nomeBinario);
+        }
+        else if (opcao == 2)
+        {
+            Registro novoRegistro;
+            cout << "ID: ";
+            cin >> novoRegistro.id;
+            cin.ignore();
+            cout << "Name: ";
+            cin.getline(novoRegistro.name, MAX_NAME);
+            cout << "City: ";
+            cin.getline(novoRegistro.city, MAX_CITY);
+            cout << "Sport: ";
+            cin.getline(novoRegistro.sport, MAX_SPORT);
+            cout << "Event: ";
+            cin.getline(novoRegistro.event, MAX_EVENT);
+            cout << "NOC: ";
+            cin.getline(novoRegistro.noc, MAX_NOC);
+            int posicao;
+            cout << "Posicao: ";
+            cin >> posicao;
+            inserirNaPosicao(nomeBinario, posicao, novoRegistro);
+        }
+        else if (opcao == 3)
+        {
+            int inicio, fim;
+            cout << "De: ";
+            cin >> inicio;
+            cout << "Ate: ";
+            cin >> fim;
+            visualizarIntervalo(nomeBinario, inicio, fim);
+        }
+        else if (opcao == 4)
+        {
+            Registro novoRegistro;
+            int posicao;
+            cout << "Posicao: ";
+            cin >> posicao;
+            cout << "ID: ";
+            cin >> novoRegistro.id;
+            cin.ignore();
+            cout << "Name: ";
+            cin.getline(novoRegistro.name, MAX_NAME);
+            cout << "City: ";
+            cin.getline(novoRegistro.city, MAX_CITY);
+            cout << "Sport: ";
+            cin.getline(novoRegistro.sport, MAX_SPORT);
+            cout << "Event: ";
+            cin.getline(novoRegistro.event, MAX_EVENT);
+            cout << "NOC: ";
+            cin.getline(novoRegistro.noc, MAX_NOC);
+            alterarRegistro(nomeBinario, posicao, novoRegistro);
+        }
+        else if (opcao == 5)
+        {
+            int posicao1, posicao2;
+            cout << "Posicao 1: ";
+            cin >> posicao1;
+            cout << "Posicao 2: ";
+            cin >> posicao2;
+            trocarRegistros(nomeBinario, posicao1, posicao2);
+        }
+        else if (opcao == 6)
+        {
+            imprimirTodosRegistros(nomeBinario);
+        }
+        else if (opcao == 7)
+        {
+            ordenarArquivo(nomeBinario);
         }
     } while (opcao != 0);
 
